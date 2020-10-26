@@ -1,7 +1,12 @@
-from django.urls import include, path
+from django.urls import path
 from . import views
 
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('contact/', views.contact, name='contact'),
+    path('about/', views.about, name='about'),
+    path('faq/', views.faq, name='faq'),
+    path('terms/', views.terms, name='terms'),
+    path('privacy-policy/', views.terms, name='privacy'),
 ]

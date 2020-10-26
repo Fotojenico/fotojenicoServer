@@ -1,6 +1,6 @@
     /*
     Flaticon icon font: Flaticon
-    Creation date: 20/02/2020 09:43
+    Creation date: 26/10/2020 13:41
     */
 
     @font-face {
@@ -37,12 +37,14 @@
   font-smoothing: antialiased;
     }
 
-    .flaticon-businessman:before { content: "\f100"; }
-.flaticon-pay:before { content: "\f101"; }
-.flaticon-plane:before { content: "\f102"; }
-.flaticon-support:before { content: "\f103"; }
+    .flaticon-trophy:before { content: "\f100"; }
+.flaticon-trophy-1:before { content: "\f101"; }
+.flaticon-badge-1:before { content: "\f102"; }
+.flaticon-paper-plane:before { content: "\f103"; }
+.flaticon-credit-card:before { content: "\f104"; }
     
-    $font-Flaticon-businessman: "\f100";
-    $font-Flaticon-pay: "\f101";
-    $font-Flaticon-plane: "\f102";
-    $font-Flaticon-support: "\f103";
+    $font-Flaticon-trophy: "\f100";
+    $font-Flaticon-trophy-1: "\f101";
+    $font-Flaticon-badge-1: "\f102";
+    $font-Flaticon-paper-plane: "\f103";
+    $font-Flaticon-credit-card: "\f104";

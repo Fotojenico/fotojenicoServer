@@ -150,7 +150,7 @@ cred = credentials.Certificate({
   "type": "service_account",
   "project_id": getenv('FIREBASE_PROJECT_ID'),
   "private_key_id": getenv('FIREBASE_PRIVATE_KEY_ID'),
-  "private_key": getenv('FIREBASE_PRIVATE_KEY').replace('\\n', '\n'),
+  "private_key": str(getenv('FIREBASE_PRIVATE_KEY')).replace('\\n', '\n'),
   "client_email": getenv('FIREBASE_CLIENT_MAIL'),
   "client_id": getenv('FIREBASE_CLIENT_ID'),
   "auth_uri": getenv('FIREBASE_AUTH_URI'),

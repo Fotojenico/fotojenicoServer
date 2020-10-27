@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 def index(request):
@@ -6,7 +6,7 @@ def index(request):
 
 
 def contact(request):
-    return render(request, 'home/contact.html')
+    return redirect('https://forms.gle/tkNCJcRuzMb2vWLL9')
 
 
 def about(request):

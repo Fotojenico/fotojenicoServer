@@ -3,7 +3,6 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 
 from app.models import Post, Vote, Fav, Profile
-from uuid import uuid4
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,7 +12,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create(**validated_data)
-        profile = Profile.objects.create(owner=user)
+        Profile.objects.create(owner=user)
         return user
 
 

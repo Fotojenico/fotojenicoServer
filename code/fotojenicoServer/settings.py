@@ -32,7 +32,7 @@ DEBUG = bool(util.strtobool(getenv('DEBUG')))
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.110', '10.0.2.2']
 else:
-    ALLOWED_HOSTS = ['fotojenico.com']
+    ALLOWED_HOSTS = ['fotojenico.com', 'www.fotojenico.com']
 
 # Application definition
 

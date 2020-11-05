@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
+from django.http import Http404
 from rest_framework import viewsets, status
 from rest_framework import permissions
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from app.models import Post, Vote, User, Fav
@@ -47,5 +47,5 @@ class FavViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def home_view():
-    return ''
+def api_root(request):
+    raise Http404

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from app.models import Post, Vote, User, Fav
 from app.serializers import UserSerializer, GroupSerializer, PostSerializer, VoteSerializer, FavSerializer
-from app.permissions import IsOwnerOrReadOnly
+from app.permissions import IsOwner
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -30,13 +30,13 @@ class PostViewSet(viewsets.ModelViewSet):
 class VoteViewSet(viewsets.ModelViewSet):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwner]
 
 
 class FavViewSet(viewsets.ModelViewSet):
     queryset = Fav.objects.all()
     serializer_class = FavSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwner]
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

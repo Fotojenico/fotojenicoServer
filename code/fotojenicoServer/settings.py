@@ -9,12 +9,14 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import io
+import json
 from pathlib import Path
 import os
 from os import getenv
 from firebase_admin import auth, initialize_app, credentials
 from distutils import util
+from google.oauth2.service_account import Credentials as GoogleStorageCredentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv('SECRET_KEY')
+with io.open('.secrets/secret-key.txt', "r", encoding="utf-8") as secret_file:
+    SECRET_KEY = secret_file.readline()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(util.strtobool(getenv('DEBUG')))
@@ -82,16 +85,14 @@ WSGI_APPLICATION = 'fotojenicoServer.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+if DEBUG:
+    with io.open('.secrets/database-dev.json', "r", encoding="utf-8") as json_file:
+        db_connection_data = json.load(json_file)
+else:
+    with io.open('.secrets/database-release.json', "r", encoding="utf-8") as json_file:
+        db_connection_data = json.load(json_file)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': getenv('POSTGRES_DB'),
-        'USER': getenv('POSTGRES_USER'),
-        'HOST': getenv('POSTGRES_HOST'),
-        'PORT': getenv('POSTGRES_PORT'),
-        'PASSWORD': getenv('POSTGRES_PASSWORD'),
-    }
+    'default': db_connection_data
 }
 
 
@@ -138,26 +139,13 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "static"
 
 # S3 storage
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_ENDPOINT_URL = getenv('AWS_S3_ENDPOINT_URL')
-
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'fotojenico'
+GS_CREDENTIALS = GoogleStorageCredentials.from_service_account_file('.secrets/google-storage.json')
+GS_DEFAULT_ACL = 'public-read'
 
 # Firebase
-cred = credentials.Certificate({
-  "type": "service_account",
-  "project_id": getenv('FIREBASE_PROJECT_ID'),
-  "private_key_id": getenv('FIREBASE_PRIVATE_KEY_ID'),
-  "private_key": str(getenv('FIREBASE_PRIVATE_KEY')).replace('\\n', '\n'),
-  "client_email": getenv('FIREBASE_CLIENT_MAIL'),
-  "client_id": getenv('FIREBASE_CLIENT_ID'),
-  "auth_uri": getenv('FIREBASE_AUTH_URI'),
-  "token_uri": getenv('FIREBASE_TOKEN_URI'),
-  "auth_provider_x509_cert_url": getenv('FIREBASE_AUTH_PROVIDER_X509_CERT_URL'),
-  "client_x509_cert_url": getenv('FIREBASE_X509_CERT_URL'),
-})
+cred = credentials.Certificate('.secrets/firebase-admin.json')
 initialize_app(cred)
 
 DEFAULT_RENDERER_CLASSES = (

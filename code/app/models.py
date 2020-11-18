@@ -6,6 +6,12 @@ import uuid
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    points = models.BigIntegerField(default=0)
+    suspicion_level = models.IntegerField(default=0)
+    point_multiplier = models.IntegerField(default=1)
+    give_point_multiplier = models.IntegerField(default=1)
+    get_point_multiplier = models.IntegerField(default=1)
+    multiplier_end_time = models.DateTimeField(auto_now_add=True)
 
 
 class Post(models.Model):
@@ -47,3 +53,12 @@ class Achievements(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     daily_post_view = models.IntegerField(default=0)
+
+
+class Multiplier(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    multiply_times = models.IntegerField(default=1)
+    bought_at = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True)
+    stackable = models.BooleanField(default=False)

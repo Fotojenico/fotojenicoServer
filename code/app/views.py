@@ -1,10 +1,13 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import Group
 from django.http import Http404
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.response import Response
 
-from app.models import Post, Vote, User, Fav
+from app.models import Post, Vote, User, Fav, Profile
 from app.serializers import UserSerializer, GroupSerializer, PostSerializer, VoteSerializer, FavSerializer
 from app.permissions import IsOwner
 
@@ -49,3 +52,19 @@ class FavViewSet(viewsets.ModelViewSet):
 
 def api_root(request):
     raise Http404
+
+
+def buy_multiplier(request, multiplier, hours):
+    multiplier_list = [2, 5, 10, 50, 100]
+    hours_list = [1, 24, 168, 720]
+    user = request.user
+
+    if hours in hours_list and multiplier in multiplier_list:
+        user_profile = Profile(owner=user)
+        user_profile.point_multiplier = multiplier
+        user_profile.multiplier_end_time = timezone.now() + timedelta(hours=hours)
+        user_profile.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        # TODO mark user for hacking
+        return Response(status=status.HTTP_403_FORBIDDEN)

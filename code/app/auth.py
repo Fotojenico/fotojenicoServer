@@ -3,10 +3,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import authentication
 from firebase_admin import auth
 
+from app.models import Profile, Achievements
+
 
 class FirebaseAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-
         token = request.headers.get('auth')
         if not token:
             return None
@@ -26,6 +27,8 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
         except ObjectDoesNotExist:
             User.objects.create_user(username=uid, email=email)
             user = User.objects.get(username=uid)
+            Profile.objects.create(owner=user)
+            Achievements.objects.create(owner=user)
             return [user, token]
 
         except Exception as e:

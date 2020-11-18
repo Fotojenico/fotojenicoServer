@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from app.models import Post, Vote, Fav, Profile
+from app.models import Post, Vote, Fav, Profile, Achievements
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,6 +13,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = User.objects.create(**validated_data)
         Profile.objects.create(owner=user)
+        Achievements.objects.create(owner=user)
         return user
 
 
@@ -48,13 +49,16 @@ class VoteSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
+            user_profile = Profile(owner=user)
             if vote_weight == 1:
-                post.upvote_count += 1
+                post.upvote_count += user_profile.give_point_multiplier * user_profile.point_multiplier
             elif vote_weight == -1:
-                post.downvote_count += 1
+                post.downvote_count += user_profile.give_point_multiplier * user_profile.point_multiplier
             else:
-                # Mark user for hacking
+                # TODO Mark user for hacking
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
+            user_profile.points += user_profile.get_point_multiplier * user_profile.point_multiplier
+            user_profile.save()
             post.save()
             vote = Vote.objects.create(owner=user, post=post, vote_weight=vote_weight)
             return vote
@@ -76,4 +80,4 @@ class FavSerializer(serializers.ModelSerializer):
             return fav
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-        # Mark user for hacking
+        # TODO Mark user for hacking

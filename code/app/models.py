@@ -6,6 +6,7 @@ import uuid
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    shown_username = models.TextField(default='', max_length=25)
     points = models.BigIntegerField(default=0)
     suspicion_level = models.IntegerField(default=0)
     point_multiplier = models.IntegerField(default=1)

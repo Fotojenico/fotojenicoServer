@@ -1,6 +1,12 @@
+from os.path import splitext
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+
+
+def photo_path(instance, filename):
+    _, file_extension = splitext(filename)
+    return f'user-uploads/{instance.owner.id}/{str(uuid.uuid4())}{file_extension}'
 
 
 class Profile(models.Model):
@@ -17,7 +23,7 @@ class Profile(models.Model):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    file = models.ImageField(blank=True, default='')
+    file = models.ImageField(blank=True, default='', upload_to=photo_path)
     upvote_count = models.PositiveBigIntegerField(default=0)
     downvote_count = models.PositiveBigIntegerField(default=0)
     favourite_count = models.PositiveBigIntegerField(default=0)

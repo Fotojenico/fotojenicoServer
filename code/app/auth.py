@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from rest_framework import authentication
 from firebase_admin import auth
 
@@ -22,11 +23,15 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
 
         try:
             user = User.objects.get(username=uid)
+            user.last_login = timezone.now()
+            user.save()
             return [user, token]
 
         except ObjectDoesNotExist:
             User.objects.create_user(username=uid, email=email)
             user = User.objects.get(username=uid)
+            user.last_login = timezone.now()
+            user.save()
             Profile.objects.create(owner=user)
             Achievements.objects.create(owner=user)
             return [user, token]

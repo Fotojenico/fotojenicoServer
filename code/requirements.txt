@@ -3,7 +3,7 @@ djangorestframework
 markdown
 django-filter
 firebase-admin
-django-storages
+django-storages[google]
 boto3
 blurhash-python
 psycopg2-binary

@@ -49,7 +49,7 @@ class VoteSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
-            user_profile = Profile(owner=user)
+            user_profile = Profile.objects.get(owner=user)
             if vote_weight == 1:
                 post.upvote_count += user_profile.give_point_multiplier * user_profile.point_multiplier
             elif vote_weight == -1:

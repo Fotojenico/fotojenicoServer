@@ -22,18 +22,11 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
             return None
 
         try:
-            user = User.objects.get(username=uid)
+            user, result = User.objects.get_or_create(username=uid)
             user.last_login = timezone.now()
             user.save()
-            return [user, token]
-
-        except ObjectDoesNotExist:
-            User.objects.create_user(username=uid, email=email)
-            user = User.objects.get(username=uid)
-            user.last_login = timezone.now()
-            user.save()
-            Profile.objects.create(owner=user)
-            Achievements.objects.create(owner=user)
+            Profile.objects.get_or_create(owner=user)
+            Achievements.objects.get_or_create(owner=user)
             return [user, token]
 
         except Exception as e:

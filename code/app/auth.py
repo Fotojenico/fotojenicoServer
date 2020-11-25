@@ -22,7 +22,7 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
             return None
 
         try:
-            user, result = User.objects.get_or_create(username=uid)
+            user, result = User.objects.get_or_create(username=uid, email=email)
             user.last_login = timezone.now()
             user.save()
             Profile.objects.get_or_create(owner=user)

@@ -55,6 +55,7 @@ def api_root(request):
     raise Http404
 
 
+@api_view(['POST'])
 def buy_multiplier(request, multiplier, hours):
     multiplier_list = [2, 5, 10, 50, 100]
     hours_list = [1, 24, 168, 720]
@@ -65,7 +66,7 @@ def buy_multiplier(request, multiplier, hours):
         user_profile.point_multiplier = multiplier
         user_profile.multiplier_end_time = timezone.now() + timedelta(hours=hours)
         user_profile.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_201_CREATED)
     else:
         # TODO mark user for hacking
         return Response(status=status.HTTP_403_FORBIDDEN)

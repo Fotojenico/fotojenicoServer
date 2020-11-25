@@ -41,11 +41,12 @@ class PostSerializer(serializers.ModelSerializer):
 class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
-        fields = ['id', 'post', 'owner', 'vote_weight', 'sent_at']
+        fields = ['id', 'post', 'owner', 'vote_weight', 'sent_at', 'watch_seconds']
 
     def create(self, validated_data):
         post = validated_data.pop('post')
         vote_weight = int(validated_data.pop('vote_weight'))
+        watch_seconds = int(validated_data.pop('watch_seconds'))
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
@@ -60,7 +61,7 @@ class VoteSerializer(serializers.ModelSerializer):
             user_profile.points += user_profile.get_point_multiplier * user_profile.point_multiplier
             user_profile.save()
             post.save()
-            vote = Vote.objects.create(owner=user, post=post, vote_weight=vote_weight)
+            vote = Vote.objects.create(owner=user, post=post, vote_weight=vote_weight, watch_seconds=watch_seconds)
             return vote
 
 

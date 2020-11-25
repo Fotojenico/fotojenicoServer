@@ -46,6 +46,7 @@ class Vote(models.Model):
     post = models.ForeignKey(Post, on_delete=models.DO_NOTHING)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True)
     vote_weight = models.IntegerField(default=0)
+    watch_seconds = models.IntegerField(default=0)
     sent_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -69,3 +70,10 @@ class Multiplier(models.Model):
     bought_at = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True)
     stackable = models.BooleanField(default=False)
+
+
+class Sent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    post = models.ForeignKey(Post, on_delete=models.DO_NOTHING)
+    sent_at = models.DateTimeField(auto_now_add=True)

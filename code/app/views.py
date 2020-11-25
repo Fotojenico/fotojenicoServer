@@ -1,4 +1,5 @@
 from datetime import timedelta
+from os import getenv
 
 from django.contrib.auth.models import Group
 from django.http import Http404
@@ -6,8 +7,8 @@ from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.response import Response
-
-from app.models import Post, Vote, User, Fav, Profile
+from rest_framework.decorators import api_view
+from app.models import Post, Vote, User, Fav, Profile, Sent
 from app.serializers import UserSerializer, GroupSerializer, PostSerializer, VoteSerializer, FavSerializer
 from app.permissions import IsOwner
 
@@ -68,3 +69,11 @@ def buy_multiplier(request, multiplier, hours):
     else:
         # TODO mark user for hacking
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(['GET'])
+def post_list(request):
+    top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('-upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
+    for post in top_posts:
+        Sent.objects.create(owner=request.user, post=post)
+    return Response(PostSerializer(top_posts, many=True).data)

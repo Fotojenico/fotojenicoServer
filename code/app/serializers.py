@@ -26,7 +26,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'upvote_count', 'downvote_count', 'favourite_count', 'file', 'owner', 'shared_at', 'last_modified']
+        fields = ['id', 'upvote_count', 'downvote_count', 'view_count', 'favourite_count', 'file', 'owner', 'shared_at', 'last_modified']
 
     def create(self, validated_data):
         request = self.context.get("request")
@@ -58,6 +58,7 @@ class VoteSerializer(serializers.ModelSerializer):
             else:
                 # TODO Mark user for hacking
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
+            post.view_count += 1
             user_profile.points += user_profile.get_point_multiplier * user_profile.point_multiplier
             user_profile.save()
             post.save()

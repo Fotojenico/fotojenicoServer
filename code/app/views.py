@@ -74,7 +74,7 @@ def buy_multiplier(request, multiplier, hours):
 
 @api_view(['GET'])
 def post_list(request):
-    top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('-upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
+    top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('view_count', 'upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
     for post in top_posts:
         Sent.objects.create(owner=request.user, post=post)
     return Response(PostSerializer(top_posts, many=True).data)

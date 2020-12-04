@@ -56,7 +56,9 @@ class VoteSerializer(serializers.ModelSerializer):
             elif vote_weight == -1:
                 post.downvote_count += user_profile.give_point_multiplier * user_profile.point_multiplier
             else:
-                # TODO Mark user for hacking
+                user_profile = Profile.objects.get(owner=request.user)
+                user_profile.suspicion_level += 1
+                user_profile.save()
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             post.view_count += 1
             user_profile.points += user_profile.get_point_multiplier * user_profile.point_multiplier

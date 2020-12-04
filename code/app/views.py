@@ -88,7 +88,14 @@ def buy_multiplier(request, multiplier, hours):
 
 @api_view(['GET'])
 def post_list(request):
-    top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('view_count', 'upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
-    for post in top_posts:
-        Sent.objects.create(owner=request.user, post=post)
-    return Response(PostSerializer(top_posts, many=True).data)
+    if request.user.is_authenticated:
+        top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('view_count', 'upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
+        for post in top_posts:
+            Sent.objects.create(owner=request.user, post=post)
+        if len(top_posts) == 0:
+            daily_list_end, _ = Achievements.objects.get_or_create(label='daily_list_end', step_count=1)
+            achievement_progress, achievement_created = AchievementProgress.objects.get_or_create(achievement=daily_list_end, owner=request.user)
+            if not achievement_created and achievement_progress.progress_reset_time:
+                achievement_progress.progress_step += 1
+                achievement_progress.save()
+        return Response(PostSerializer(top_posts, many=True).data)

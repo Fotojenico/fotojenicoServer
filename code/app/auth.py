@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from rest_framework import authentication
 from firebase_admin import auth
@@ -15,7 +14,7 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
 
         try:
             decoded_token = auth.verify_id_token(token)
-            uid = decoded_token['uid']
+            uid = decoded_token['user_id']
             email = decoded_token['email']
             username = ''
             if 'name' in decoded_token:

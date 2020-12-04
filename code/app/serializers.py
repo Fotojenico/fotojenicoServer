@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from app.models import Post, Vote, Fav, Profile, Achievements
+from app.models import Post, Vote, Fav, Profile, Achievements, AchievementProgress
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -83,3 +83,17 @@ class FavSerializer(serializers.ModelSerializer):
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         # TODO Mark user for hacking
+
+
+class AchievementSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Achievements
+        fields = ['id', 'label', 'step_count']
+
+
+class AchievementProgressSerializer(serializers.HyperlinkedModelSerializer):
+    achievement = AchievementSerializer(read_only=True)
+
+    class Meta:
+        model = AchievementProgress
+        fields = ['id', 'owner', 'achievement', 'progress_step']

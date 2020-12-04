@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from app.views import UserViewSet, GroupViewSet, PostViewSet, VoteViewSet, FavViewSet, api_root, buy_multiplier, post_list
+from app.views import UserViewSet, GroupViewSet, PostViewSet, VoteViewSet, AchievementViewSet, AchievementProgressViewSet, FavViewSet, api_root, buy_multiplier, post_list
 from fotojenicoServer.settings import DEBUG
 
 router = routers.DefaultRouter()
@@ -10,6 +10,9 @@ router.register('groups', GroupViewSet)
 router.register('posts', PostViewSet)
 router.register('votes', VoteViewSet)
 router.register('fav', FavViewSet)
+router.register('achievements', AchievementViewSet)
+router.register('achievement_progress', AchievementProgressViewSet)
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

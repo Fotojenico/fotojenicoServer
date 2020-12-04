@@ -66,8 +66,16 @@ class Fav(models.Model):
 
 class Achievements(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    label = models.TextField(unique=True)
+    step_count = models.IntegerField(default=1)
+
+
+class AchievementProgress(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    daily_post_view = models.IntegerField(default=0)
+    achievement = models.ForeignKey(Achievements, on_delete=models.DO_NOTHING)
+    progress_step = models.IntegerField(default=0)
+    progress_reset_time = models.DateTimeField(null=True)
 
 
 class Multiplier(models.Model):

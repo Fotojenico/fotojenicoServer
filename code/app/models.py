@@ -33,6 +33,12 @@ class Post(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
 
+class PostPriority(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    post = models.ForeignKey(Post, on_delete=models.DO_NOTHING)
+    priority = models.IntegerField(default=0)
+
+
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     comment_of = models.ForeignKey(Post, on_delete=models.DO_NOTHING, null=True)

@@ -167,3 +167,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': int(getenv('REST_PAGE_SIZE')),
 }
+
+ACHIEVEMENTS = {
+    'daily_list_end': {
+        'step_count': 1,
+    }
+}

@@ -8,9 +8,10 @@ from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from app.models import Post, Vote, User, Fav, Profile, Sent, Achievements, AchievementProgress
-from app.serializers import UserSerializer, GroupSerializer, PostSerializer, VoteSerializer, FavSerializer, AchievementSerializer, AchievementProgressSerializer
-from app.permissions import IsOwner, ReadOnly, OwnerReadOnly
+from app.models import Post, Vote, User, Fav, Profile, Sent, AchievementProgress
+from app.serializers import UserSerializer, GroupSerializer, PostSerializer, VoteSerializer, FavSerializer, AchievementProgressSerializer
+from app.permissions import IsOwner, OwnerReadOnly
+from fotojenicoServer.settings import ACHIEVEMENTS
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,18 +38,16 @@ class VoteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwner]
 
 
-class AchievementViewSet(viewsets.ModelViewSet):
-    queryset = Achievements.objects.all()
-    serializer_class = AchievementSerializer
-    permission_classes = [ReadOnly]
-
-
 class AchievementProgressViewSet(viewsets.ModelViewSet):
     pagination_class = None
-    achievement = Achievements.objects.all()
     queryset = AchievementProgress.objects.all()
     serializer_class = AchievementProgressSerializer
     permission_classes = [OwnerReadOnly]
+
+    def get_queryset(self):
+        # after get all products on DB it will be filtered by its owner and return the queryset
+        owner_queryset = self.queryset.filter(owner=self.request.user)
+        return owner_queryset
 
 
 class FavViewSet(viewsets.ModelViewSet):

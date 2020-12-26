@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from app.models import Post, Vote, Fav, Profile, Achievements, AchievementProgress
+from app.models import Post, Vote, Fav, Profile, AchievementProgress
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,7 +13,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = User.objects.create(**validated_data)
         Profile.objects.create(owner=user)
-        Achievements.objects.create(owner=user)
         return user
 
 
@@ -87,15 +86,7 @@ class FavSerializer(serializers.ModelSerializer):
         # TODO Mark user for hacking
 
 
-class AchievementSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Achievements
-        fields = ['id', 'label', 'step_count']
-
-
 class AchievementProgressSerializer(serializers.HyperlinkedModelSerializer):
-    achievement = AchievementSerializer(read_only=True)
-
     class Meta:
         model = AchievementProgress
-        fields = ['id', 'owner', 'achievement', 'progress_step']
+        fields = ['id', 'owner', 'achievement', 'step_count', 'progress_step']

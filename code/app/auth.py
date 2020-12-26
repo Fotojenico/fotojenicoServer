@@ -2,8 +2,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework import authentication
 from firebase_admin import auth
-
-from app.models import Profile, Achievements, AchievementProgress
+from fotojenicoServer.settings import ACHIEVEMENTS
+from app.models import Profile, AchievementProgress
 
 
 class FirebaseAuthentication(authentication.BaseAuthentication):
@@ -31,9 +31,8 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
             if username != '':
                 profile.shown_username = username
             profile.save()
-            all_achievements = Achievements.objects.all()
-            for achievement in all_achievements:
-                AchievementProgress.objects.get_or_create(achievement=achievement, owner=user)
+            for achievement in ACHIEVEMENTS:
+                AchievementProgress.objects.get_or_create(achievement=achievement, owner=user, step_count=ACHIEVEMENTS[achievement]['step_count'])
             return [user, token]
 
         except Exception as e:

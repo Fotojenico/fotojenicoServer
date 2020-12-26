@@ -64,16 +64,11 @@ class Fav(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True)
 
 
-class Achievements(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    label = models.TextField(unique=True)
-    step_count = models.IntegerField(default=1)
-
-
 class AchievementProgress(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    achievement = models.ForeignKey(Achievements, on_delete=models.DO_NOTHING)
+    achievement = models.TextField()
+    step_count = models.IntegerField(default=1)
     progress_step = models.IntegerField(default=0)
     progress_reset_time = models.DateTimeField(null=True)
 

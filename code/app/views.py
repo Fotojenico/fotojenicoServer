@@ -85,16 +85,35 @@ def buy_multiplier(request, multiplier, hours):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def post_list(request):
-    if request.user.is_authenticated:
-        top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('view_count', 'upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
-        for post in top_posts:
-            Sent.objects.create(owner=request.user, post=post)
-        if len(top_posts) == 0:
-            daily_list_end, _ = Achievements.objects.get_or_create(label='daily_list_end', step_count=1)
-            achievement_progress, achievement_created = AchievementProgress.objects.get_or_create(achievement=daily_list_end, owner=request.user)
-            if not achievement_created and achievement_progress.progress_reset_time:
-                achievement_progress.progress_step += 1
-                achievement_progress.save()
-        return Response(PostSerializer(top_posts, many=True).data)
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            top_posts = Post.objects.all().exclude(sent__owner=request.user).order_by('view_count', 'upvote_count')[:int(getenv('REST_PAGE_SIZE'))]
+            for post in top_posts:
+                Sent.objects.create(owner=request.user, post=post)
+            if len(top_posts) == 0:
+                achievement_progress, achievement_created = AchievementProgress.objects.get_or_create(
+                    owner=request.user,
+                    achievement='daily_list_end',
+                    step_count=ACHIEVEMENTS['daily_list_end']['step_count'],
+                )
+                if achievement_progress.progress_reset_time is None:
+                    achievement_progress.progress_reset_time = timezone.now() + timedelta(days=1)
+                    achievement_progress.save()
+
+                if not achievement_created and achievement_progress.progress_reset_time > timezone.now():
+                    achievement_progress.progress_step += 1
+                    achievement_progress.save()
+
+            return Response(PostSerializer(top_posts, many=True).data)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+    elif request.method == 'POST':
+
+        if request.user.is_authenticated:
+            user = request.user
+            return_post = Post.objects.create(owner=user, file=request.FILES['file'])
+            return Response(PostSerializer(return_post).data)
+    else:
+        return Response(status=status.HTTP_403_FORBIDDEN)

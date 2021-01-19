@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from app.views import UserViewSet, GroupViewSet, PostViewSet, VoteViewSet, AchievementProgressViewSet, FavViewSet, api_root, buy_multiplier, post_list
+from app.views import UserViewSet, GroupViewSet, PostViewSet, VoteViewSet, AchievementProgressViewSet, FavViewSet, api_root, buy_multiplier, post_list, delete_fav
 from fotojenicoServer.settings import DEBUG
 
 router = routers.DefaultRouter()
@@ -16,6 +16,7 @@ router.register('achievement_progress', AchievementProgressViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('posts/', post_list, name='post_list'),
+    path('fav/delete/', delete_fav, name='delete_fav'),
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('buy_multiplier/<int:multiplier>/<int:hours>/', buy_multiplier, name='buy_multiplier'),

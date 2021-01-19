@@ -55,14 +55,6 @@ class FavViewSet(viewsets.ModelViewSet):
     serializer_class = FavSerializer
     permission_classes = [IsOwner]
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        post = instance.post
-        post.favourite_count -= 1
-        post.save()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 def api_root(request):
     raise Http404
@@ -115,5 +107,21 @@ def post_list(request):
             user = request.user
             return_post = Post.objects.create(owner=user, file=request.FILES['file'])
             return Response(PostSerializer(return_post).data)
+    else:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(['GET'])
+def delete_fav(request):
+    if request.user.is_authenticated:
+        user = request.user
+        post = Post.objects.get(id=request.GET['post'])
+        if post:
+            fav = Fav.objects.get(owner=user, post=post)
+            fav.delete()
+            post.favourite_count -= 1
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
     else:
         return Response(status=status.HTTP_403_FORBIDDEN)
